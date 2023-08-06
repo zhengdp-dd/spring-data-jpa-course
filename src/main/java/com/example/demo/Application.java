@@ -5,6 +5,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,60 +21,42 @@ public class Application {
 
 
     @Bean
-    CommandLineRunner commandLineRunner1(StudentRepository repository) {
+    CommandLineRunner commandLineRunner(StudentRepository repository) {
       return args -> {
-          Faker faker = new Faker();
-          for(int i =0;i<20;i++) {
-              String firstName = faker.name().firstName();
-              String lastName = faker.name().lastName();
-              String email = String.format("%s.%s@163.com",firstName,lastName);
-              Integer age = faker.number().numberBetween(17,55);
-              repository.save(new Student(firstName,lastName,email,age));
-          }
+          generateRandomStudents(repository);
+
+          pageing(repository);
+
       };
     }
 
-//    @Bean
-    CommandLineRunner commandLineRunner(StudentRepository repository) {
-        return args -> {
-            Student student = new Student(
-                    "DP",
-                    "Zheng",
-                    "Zhengdp@edu",
-                    21
-            );
-
-            Student student2 = new Student(
-                    "DP",
-                    "Li",
-                    "LiDp@edu",
-                    22
-            );
-
-            Student ahmed = new Student(
-                    "Ahmed",
-                    "Ali",
-                    "Ahmed.ali@edu",
-                    21
-            );
-            List<Student> temp = new ArrayList<>();
-            temp.add(student);
-            temp.add(ahmed);
-            temp.add(student2);
-            System.out.println("Adding zhengdp and ahmed");
-            repository.saveAll(temp);
-
-            repository.findStudentByEmail("Ahmed.ali@edu").ifPresent(System.out::println);
-
-            repository.findStudentsByFirstNameEqualsAndAgeEquals("DP",21)
-                    .forEach(System.out::println);
-
-            System.out.println("====================");
-
-            repository.customQuery2("DP",21).forEach(System.out::println);
-
-            System.out.println(repository.customDeleteById(1L));;
-        };
+    private static void pageing(StudentRepository repository) {
+        PageRequest pageRequest = PageRequest.of(0,5,Sort.by("firstName").ascending());
+        Page<Student> page = repository.findAll(pageRequest);
+        System.out.println(page);
     }
+
+    private static void sorting(StudentRepository repository) {
+        // Sort
+        Sort sort = Sort.by("firstName").ascending()
+                .and(Sort.by(Sort.Direction.DESC,"age"));
+
+        repository.findAll(sort).forEach(student -> {
+            System.out.println(student.getFirstName() + " " + student.getAge());
+        });
+    }
+
+    private void generateRandomStudents(StudentRepository repository) {
+        Faker faker = new Faker();
+        for(int i =0;i<20;i++) {
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
+            String email = String.format("%s.%s@163.com",firstName,lastName);
+            Integer age = faker.number().numberBetween(17,55);
+            repository.save(new Student(firstName,lastName,email,age));
+        }
+    };
+
+
 
 }
