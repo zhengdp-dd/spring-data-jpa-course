@@ -50,6 +50,12 @@ public class Application {
 
             repository.findStudentsByFirstNameEqualsAndAgeEquals("DP",21)
                     .forEach(System.out::println);
+
+            System.out.println("====================");
+
+            repository.customQuery2("DP",21).forEach(System.out::println);
+
+            System.out.println(repository.customDeleteById(1L));;
         };
     }
 
