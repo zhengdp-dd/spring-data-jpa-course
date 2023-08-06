@@ -21,16 +21,34 @@ public class Application {
 
 
     @Bean
-    CommandLineRunner commandLineRunner(StudentRepository repository) {
+    CommandLineRunner commandLineRunner(StudentRepository studentRepository, StudentIdCardRepository studentIdCardRepository) {
       return args -> {
-          generateRandomStudents(repository);
+          Faker faker = new Faker();
+          String firstName = faker.name().firstName();
+          String lastName = faker.name().lastName();
+          String email = String.format("%s.%s@163.com",firstName,lastName);
+          Integer age = faker.number().numberBetween(17,55);
+          Student student = new Student(firstName,lastName,email,age);
 
-          pageing(repository);
+          StudentIdCard studentIdCard = new StudentIdCard(
+                  "123456789",
+                  student
+          );
+          // 调用StudentIdCard的保存方法，会将Student也保存进去
+          studentIdCardRepository.save(studentIdCard);
 
+          studentRepository.findById(1L).ifPresent(System.out::println);
+
+          studentIdCardRepository.findById(1L)
+                  .ifPresent(System.out::println);
+
+          // 测试级联删除
+          studentRepository.deleteById(1L);
+//          studentIdCardRepository.deleteById(1L);
       };
     }
 
-    private static void pageing(StudentRepository repository) {
+    private static void paging(StudentRepository repository) {
         PageRequest pageRequest = PageRequest.of(0,5,Sort.by("firstName").ascending());
         Page<Student> page = repository.findAll(pageRequest);
         System.out.println(page);
