@@ -8,6 +8,7 @@ import org.apache.tomcat.jni.Local;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
@@ -31,14 +32,20 @@ public class Enrolment {
     @ManyToOne
     @MapsId("studentId") // 说明这里的这个Student只是EnrolmentId中StudentId的映射
     @JoinColumn(
-            name = "student_id" // 外键名称（数据库实际名称）
+            name = "student_id", // 外键名称（数据库实际名称）
+            foreignKey = @ForeignKey(
+                    name = "enrolment_student_id_fk"
+            )
     )
     private Student student;
 
     @ManyToOne
     @MapsId("courseId") // 说明这里的这个Student只是EnrolmentId中StudentId的映射
     @JoinColumn(
-            name = "course_id" // 外键名称（数据库实际名称）
+            name = "course_id", // 外键名称（数据库实际名称）
+            foreignKey = @ForeignKey(
+                    name = "enrolment_course_id_fk"
+            )
     )
     private Course course;
 
