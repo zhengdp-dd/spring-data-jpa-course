@@ -26,6 +26,13 @@ public class Application {
                     21
             );
 
+            Student student2 = new Student(
+                    "DP",
+                    "Li",
+                    "LiDp@edu",
+                    22
+            );
+
             Student ahmed = new Student(
                     "Ahmed",
                     "Ali",
@@ -35,24 +42,14 @@ public class Application {
             List<Student> temp = new ArrayList<>();
             temp.add(student);
             temp.add(ahmed);
+            temp.add(student2);
             System.out.println("Adding zhengdp and ahmed");
             repository.saveAll(temp);
 
-            System.out.print("Number of Student: ");
-            System.out.println(repository.count());
+            repository.findStudentByEmail("Ahmed.ali@edu").ifPresent(System.out::println);
 
-            repository.findById(2L).ifPresent(System.out::println);
-
-            repository.findById(3L).ifPresent(System.out::println);
-            System.out.println("Select all students");
-            List<Student> all = repository.findAll();
-            all.forEach(System.out::println);
-
-            System.out.println("Delete Student By 1L");
-            repository.deleteById(1L);
-
-            System.out.print("Number of Student: ");
-            System.out.println(repository.count());
+            repository.findStudentsByFirstNameEqualsAndAgeEquals("DP",21)
+                    .forEach(System.out::println);
         };
     }
 
