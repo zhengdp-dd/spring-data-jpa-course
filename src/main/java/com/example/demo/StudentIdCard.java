@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -68,7 +69,10 @@ public class StudentIdCard {
     )
     @JoinColumn(
             name ="student_id", // 当前表 外键名
-            referencedColumnName = "id" // 对应表的外键名
+            referencedColumnName = "id", // 对应表的外键名
+            foreignKey = @ForeignKey(
+                    name = "student_id_fk" // 设置外键约束名称
+            )
     )
     private Student student;
 
