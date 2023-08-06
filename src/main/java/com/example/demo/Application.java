@@ -44,10 +44,20 @@ public class Application {
 
           student.setStudentIdCard(studentIdCard);
 
-          // 设置 course
-          student.enrolToCourse(new Course("Computer Science","IT"));
-          student.enrolToCourse(new Course("Spring Data JPA","IT"));
+          // 设置 enrolment
+          student.addEnrolment(new Enrolment(
+                  new EnrolmentId(1L,1L),
+                  student,
+                  new Course("Computer Science","IT"),
+                  LocalDateTime.now()
+          ));
 
+          student.addEnrolment(new Enrolment(
+                  new EnrolmentId(1L,2L),
+                  student,
+                  new Course("Spring Data JPA","IT"),
+                  LocalDateTime.now().minusDays(18)
+          ));
           // 外键外侧实体 需要设置传播级别，才能将StudentCard级联保存
           studentRepository.save(student);
 

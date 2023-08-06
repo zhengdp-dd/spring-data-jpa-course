@@ -3,13 +3,16 @@ package com.example.demo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.tomcat.jni.Local;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * @Author zhengdp
@@ -39,8 +42,16 @@ public class Enrolment {
     )
     private Course course;
 
-    public Enrolment(Student student, Course course) {
+    @Column(
+            name = "craete_at",
+            nullable = false,
+            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+    )
+    private LocalDateTime createAt;
+
+    public Enrolment(Student student, Course course, LocalDateTime createAt) {
         this.student = student;
         this.course = course;
+        this.createAt = createAt;
     }
 }

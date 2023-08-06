@@ -106,36 +106,36 @@ public class Student {
     )
     private List<Book> books = new ArrayList<>();
 
-    @ManyToMany(
-            cascade = {
-                    CascadeType.PERSIST,CascadeType.REMOVE
-            }
+//    @ManyToMany(
+//            cascade = {
+//                    CascadeType.PERSIST,CascadeType.REMOVE
+//            }
+//    )
+//    @JoinTable( // JoinTable会为我们创建链接表，但一般要自己创建，才可以指定一些细节
+//            name = "enrolment", // 链接表名称
+//            joinColumns = @JoinColumn( // 定义外键
+//                    name = "student_id",
+//                    foreignKey = @ForeignKey(name = "enrolment_student_id_fk")
+//            ),
+//            inverseJoinColumns = @JoinColumn(
+//                    name = "course_id",
+//                    foreignKey = @ForeignKey(name = "enrolment_course_id_fk")
+//            )
+//    )
+    @OneToMany(
+            cascade = {CascadeType.PERSIST,CascadeType.REMOVE},
+            mappedBy = "student" //Enrolment类中对应的属性名
     )
-    @JoinTable( // JoinTable会为我们创建链接表，但一般要自己创建，才可以指定一些细节
-            name = "enrolment", // 链接表名称
-            joinColumns = @JoinColumn( // 定义外键
-                    name = "student_id",
-                    foreignKey = @ForeignKey(name = "enrolment_student_id_fk")
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "course_id",
-                    foreignKey = @ForeignKey(name = "enrolment_course_id_fk")
-            )
-    )
-    private List<Course> courses = new ArrayList<>();
+    private List<Enrolment> enrolments = new ArrayList<>();
 
-    public void enrolToCourse(Course course) {
-        this.courses.add(course);
-        course.getStudents().add(this);
+    public void addEnrolment(Enrolment enrolment) {
+        if(!enrolments.contains(enrolment)) {
+            enrolments.add(enrolment);
+        }
     }
 
-    public void removeCourse(Course course) {
-        this.courses.remove(course);
-        course.getStudents().remove(this);
-    }
-
-    public List<Book> getBooks() {
-        return books;
+    public void removeEnrolment(Enrolment enrolment) {
+        enrolments.remove(enrolment);
     }
 
     public void addBook(Book book) {
