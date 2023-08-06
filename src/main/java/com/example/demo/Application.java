@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.github.javafaker.Faker;
+import org.hibernate.Hibernate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,18 +36,52 @@ public class Application {
                   "123456789",
                   student
           );
-          // 调用StudentIdCard的保存方法，会将Student也保存进去
-          studentIdCardRepository.save(studentIdCard);
 
-          studentRepository.findById(1L).ifPresent(System.out::println);
+          // 初始化三本书
+          student.addBook(new Book("Clean code", LocalDateTime.now().minusDays(4)));
+          student.addBook(new Book("Think and Grow Rich", LocalDateTime.now()));
+          student.addBook(new Book("Spring Data JPA", LocalDateTime.now().minusYears(1)));
 
-          studentIdCardRepository.findById(1L)
-                  .ifPresent(System.out::println);
+          student.setStudentIdCard(studentIdCard);
+          // 外键外侧实体 需要设置传播级别，才能将StudentCard级联保存
+          studentRepository.save(student);
 
-          // 测试级联删除
-          studentRepository.deleteById(1L);
-//          studentIdCardRepository.deleteById(1L);
+          studentRepository.findById(1L)
+                  .ifPresent(s -> {
+                      System.out.println("fetch book lazy ...");
+                      List<Book> books = s.getBooks();
+                      books.forEach(book -> {
+                          System.out.println(
+                                  s.getFirstName() + " borrowed " + book.getBookName()
+                          );
+                      });
+                  });
       };
+    }
+
+    private static void oneToOneTest(StudentRepository studentRepository, StudentIdCardRepository studentIdCardRepository) {
+        Faker faker = new Faker();
+        String firstName = faker.name().firstName();
+        String lastName = faker.name().lastName();
+        String email = String.format("%s.%s@163.com",firstName,lastName);
+        Integer age = faker.number().numberBetween(17,55);
+        Student student = new Student(firstName,lastName,email,age);
+
+        StudentIdCard studentIdCard = new StudentIdCard(
+                "123456789",
+                student
+        );
+        // 调用StudentIdCard的保存方法，会将Student也保存进去
+        studentIdCardRepository.save(studentIdCard);
+
+        studentRepository.findById(1L).ifPresent(System.out::println);
+
+        studentIdCardRepository.findById(1L)
+                .ifPresent(System.out::println);
+
+        // 测试级联删除
+        studentRepository.deleteById(1L);
+//          studentIdCardRepository.deleteById(1L);
     }
 
     private static void paging(StudentRepository repository) {

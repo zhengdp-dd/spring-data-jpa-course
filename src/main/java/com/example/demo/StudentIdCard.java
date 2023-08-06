@@ -64,7 +64,6 @@ public class StudentIdCard {
     // CascadeType.ALL: 传播所有行为：增删改查 --> card的保存也会传播到student,使得student也进行持久化操作
     @OneToOne(
             cascade = CascadeType.ALL,
-            orphanRemoval = false,
             fetch = FetchType.EAGER // 默认
     )
     @JoinColumn(

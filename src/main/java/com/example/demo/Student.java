@@ -4,15 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author zhengdp
@@ -80,9 +85,40 @@ public class Student {
             // 双向绑定
             mappedBy = "student", // 在关联的反向侧指定，用该注解来标注具有关联关系的字段
             // 只能控制关联的反向侧（StudentCard删除时，无论该属性为什么值，都会进行级联删除）
-            orphanRemoval = true // 级联删除，删除Student时会将其关联的StudentCard也一起删除
+            orphanRemoval = true, // 级联删除，删除Student时会将其关联的StudentCard也一起删除
+            cascade = {
+                    CascadeType.PERSIST,CascadeType.REMOVE
+            }
     )
     private StudentIdCard studentIdCard;
+
+    @OneToMany(
+            mappedBy = "student", // 对应实体类中的关联属性的属性名
+            orphanRemoval = true,
+            cascade = {
+                    CascadeType.PERSIST,CascadeType.REMOVE
+            },
+            fetch = FetchType.EAGER // ManyToOne/Many 默认是Lazy,在查询时不会去查询book，只有当代码中对books对象进行操作，才会去查询Book
+    )
+    private List<Book> books = new ArrayList<>();
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void addBook(Book book) {
+        if(!books.contains(book)) {
+            books.add(book);
+            book.setStudent(this);
+        }
+    }
+
+    public void removeBook(Book book) {
+        if(this.books.contains(book)) {
+            this.books.remove(book);
+            book.setStudent(null);
+        }
+    }
 
 
     public Student(String firstName, String lastName, String email, Integer age) {
