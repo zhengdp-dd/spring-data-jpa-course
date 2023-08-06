@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,6 +18,20 @@ public class Application {
 
 
     @Bean
+    CommandLineRunner commandLineRunner1(StudentRepository repository) {
+      return args -> {
+          Faker faker = new Faker();
+          for(int i =0;i<20;i++) {
+              String firstName = faker.name().firstName();
+              String lastName = faker.name().lastName();
+              String email = String.format("%s.%s@163.com",firstName,lastName);
+              Integer age = faker.number().numberBetween(17,55);
+              repository.save(new Student(firstName,lastName,email,age));
+          }
+      };
+    }
+
+//    @Bean
     CommandLineRunner commandLineRunner(StudentRepository repository) {
         return args -> {
             Student student = new Student(
