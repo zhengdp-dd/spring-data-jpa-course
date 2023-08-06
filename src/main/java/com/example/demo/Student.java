@@ -8,9 +8,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
@@ -101,6 +105,34 @@ public class Student {
             fetch = FetchType.EAGER // ManyToOne/Many 默认是Lazy,在查询时不会去查询book，只有当代码中对books对象进行操作，才会去查询Book
     )
     private List<Book> books = new ArrayList<>();
+
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,CascadeType.REMOVE
+            }
+    )
+    @JoinTable( // JoinTable会为我们创建链接表，但一般要自己创建，才可以指定一些细节
+            name = "enrolment", // 链接表名称
+            joinColumns = @JoinColumn( // 定义外键
+                    name = "student_id",
+                    foreignKey = @ForeignKey(name = "enrolment_student_id_fk")
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "course_id",
+                    foreignKey = @ForeignKey(name = "enrolment_course_id_fk")
+            )
+    )
+    private List<Course> courses = new ArrayList<>();
+
+    public void enrolToCourse(Course course) {
+        this.courses.add(course);
+        course.getStudents().add(this);
+    }
+
+    public void removeCourse(Course course) {
+        this.courses.remove(course);
+        course.getStudents().remove(this);
+    }
 
     public List<Book> getBooks() {
         return books;
