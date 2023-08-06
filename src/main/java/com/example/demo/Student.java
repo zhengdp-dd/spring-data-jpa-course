@@ -1,6 +1,8 @@
 package com.example.demo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +18,8 @@ import javax.persistence.UniqueConstraint;
  * @Description  @Column 列定义
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "Student")
 @Table(
         name = "student",
@@ -71,4 +75,11 @@ public class Student {
     )
     private Integer age;
 
+
+    public Student(String firstName, String lastName, String email, Integer age) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.age = age;
+    }
 }
